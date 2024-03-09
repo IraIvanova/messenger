@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="col-sm-4 side">
+    <div class="side-one">
+        <div class="row heading">
+            <div class="col-sm-3 col-xs-3 heading-avatar">
+                <div class="heading-avatar-icon">
+                    <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
+                </div>
+            </div>
+            <div class="col-sm-3">{{request.user.username}}</div>
+            {% if perms.messenger.add_chat %}
+            <div class=" col-sm-6 text-align-right">
+                <a href="{% url 'create_chat' %}">
+                     <i class="fa fa-plus"></i>
+                    Add new chat
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="row searchBox">
+            <div class="col-sm-12 searchBox-inner">
+                <div class="form-group has-feedback">
+                    <input id="searchText" type="text" class="form-control" name="searchText"
+                           placeholder="Search">
+                    <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row sideBar">
+            {% for chat in chats %}
+            <div class="row sideBar-body">
+                <div class="col-sm-3 col-xs-3 sideBar-avatar">
+                    <div class="avatar-icon">
+                        <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
+                    </div>
+                </div>
+                <div class="col-sm-9 col-xs-9 sideBar-main">
+                    <div class="row">
+                        <div class="col-sm-8 col-xs-8 sideBar-name">
+<span class="name-meta"><a href="{% url 'show_chat' chat.id %}">{{chat.title}}</a>
+</span>
+                        </div>
+                        <div class="col-sm-4 col-xs-4 pull-right sideBar-time">
+<span class="time-meta pull-right">18:18
+</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div class="col-sm-8 conversation">
+    {% block chat_thread %}{% endblock chat_thread %}
+</div>
+</div>
+
+{% endblock %}

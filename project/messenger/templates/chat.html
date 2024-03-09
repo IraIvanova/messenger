@@ -1,0 +1,68 @@
+{% extends "base_chat.html" %}
+
+{% load define_receiver_or_sender %}
+{% load is_edit_date_not_expired %}
+{% load static %}
+
+{% block chat_thread %}
+<div class="row heading">
+
+    <div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
+        <div class="heading-avatar-icon">
+            <img src="https://bootdey.com/img/Content/avatar/avatar6.png">
+        </div>
+    </div>
+    <div class="col-sm-8 col-xs-7 heading-name">
+        <a class="heading-name-meta">{{chat.title}}</a>
+        <span class="heading-members">Members: {{chat.members.count}}</span>
+    </div>
+    <div class="col-sm-1 col-xs-1  heading-dot pull-right">
+        <i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
+    </div>
+</div>
+<div class="row message" id="conversation">
+    {% if messages %}
+    {% for msg in messages %}
+    <div class="row message-body">
+        <div class="col-sm-12 message-main-{% define_receiver_or_sender msg.author user %}">
+            <div class="{% define_receiver_or_sender msg.author user %}">
+                <div>
+                    <span>{{ msg.author.username }}</span>
+                    {% is_edit_date_not_expired msg.created_at as edit_date_not_expired %}
+                    {% if request.user == msg.author and edit_date_not_expired %}
+                    <i class="fa fa-pencil pull-right edit-msg" data-id="{{ msg.id }}" aria-hidden="true"></i>
+                    <i class="fa fa-trash pull-right delete-msg" data-id="{{ msg.id }}" aria-hidden="true"></i>
+                    {% endif %}
+                </div>
+                <div class="message-text">
+                    {{ msg.message }}
+                </div>
+                <span class="message-time pull-right">{{ msg.created_at|date:"Y-m-d" }}</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+</div>
+<div class="row reply">
+    {% if form %}
+    <div class="col-sm-1 col-xs-1 reply-emojis">
+        <i class="fa fa-smile-o fa-2x"></i>
+    </div>
+    <form method="post" action="{% url 'send_message' %}">
+        {% csrf_token %}
+        <div class="col-sm-9 col-xs-9 reply-main">
+            {{ form.as_p }}
+        </div>
+        <div class="col-sm-1 col-xs-1 reply-send">
+            <button type="submit" class="btn btn-dark"><i class="fa fa-send fa-2x"></i></button>
+        </div>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block customJs %}
+    <script src="{% static 'js/chat.js' %}" /></script>
+{% endblock %}

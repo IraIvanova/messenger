@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Members page{% endblock %}
+
+{% block content %}
+<h2>All users</h2>
+
+<table class="table table-striped">
+{% for user in users %}
+    <tr class="p-2">
+        <td><a href="{% url 'users' user.id %}">{{ user.username }} - {{ user.email }}</a></td>
+        <td><a href="{% url 'edit_user' user.id %}" class="btn btn-outline-primary">Edit</a></td>
+    </tr>
+{% endfor %}
+</table>
+<a href="{% url 'register' %}">Add user</a>
+{% endblock %}
