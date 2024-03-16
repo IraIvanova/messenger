@@ -29,3 +29,4 @@ class CreateMessageForm(forms.Form):
     author = forms.CharField(widget=forms.HiddenInput)
     chat = forms.CharField(widget=forms.HiddenInput)
     message_id = forms.CharField(widget=forms.HiddenInput, required=False)
+    recipient = forms.CharField(widget=forms.HiddenInput, required=False)

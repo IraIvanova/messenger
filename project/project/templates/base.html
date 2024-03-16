@@ -324,11 +324,10 @@ body {
 .message {
   padding: 0 !important;
   margin: 0 !important;
-
   background-size: cover;
   overflow-y: auto;
   border: 1px solid #f7f7f7;
-  height: calc(100% - 120px);
+  height: calc(100% - 160px);
 }
 .message-previous {
   margin : 0 !important;
@@ -395,7 +394,8 @@ body {
   display: inline-block;
 }
 
-.sender {
+.sender,
+.service {
   float: right;
   width: auto !important;
   background: #dcf8c6;
@@ -407,17 +407,36 @@ body {
   word-wrap: break-word;
 }
 
+.service {
+  background: #e3e3e3;
+}
+.service .message-text {
+    font-size: 12px;
+    color: #4277a5;
+}
 
 /*Reply*/
 
 .reply {
-  height: 60px;
+  height: 100px;
   width: 100%;
   background-color: #f5f1ee;
   padding: 10px 5px 10px 5px !important;
   margin: 0 !important;
   z-index: 1000;
+  position: absolute;
 }
+.reply form {
+    position: relative;
+    bottom: -26px;
+}
+
+ #preview-reply-msg{
+   max-height: 30px;
+   height: auto;
+   border-left: 3px solid dodgerblue;
+   margin-left: 20px;
+ }
 
 .reply-emojis {
   padding: 5px !important;
@@ -591,6 +610,10 @@ body {
     padding: 5px 2px 5px 0 !important;
     font-size: 1.8em !important;
   }
+  .reply {
+  position: relative;
+  }
+
 }
     </style>
 </head>
@@ -599,16 +622,16 @@ body {
 <div class="container app">
 
     <div class="row app-one">
-            {% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
-        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
-        {{ message }}
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
+<!--            {% if messages %}-->
+<!--<ul class="messages">-->
+<!--    {% for message in messages %}-->
+<!--    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>-->
+<!--        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}-->
+<!--        {{ message }}-->
+<!--    </li>-->
+<!--    {% endfor %}-->
+<!--</ul>-->
+<!--{% endif %}-->
         {% block content %}{% endblock content %}
     </div>
 </div>

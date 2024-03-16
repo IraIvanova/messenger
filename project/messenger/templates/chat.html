@@ -24,32 +24,39 @@
     {% if messages %}
     {% for msg in messages %}
     <div class="row message-body">
-        <div class="col-sm-12 message-main-{% define_receiver_or_sender msg.author user %}">
-            <div class="{% define_receiver_or_sender msg.author user %}">
+        <div class="col-sm-12 message-main-{% define_receiver_or_sender msg user %}">
+            {% if request.user != msg.author %}
+            <span class="fa fa-commenting reply-to-user" data-recipient="{{msg.author}}"></span>
+            {% endif %}
+            <div class="{% define_receiver_or_sender msg user %}">
                 <div>
+                    {% if not msg.service_msg %}
                     <span>{{ msg.author.username }}</span>
                     {% is_edit_date_not_expired msg.created_at as edit_date_not_expired %}
                     {% if request.user == msg.author and edit_date_not_expired %}
                     <i class="fa fa-pencil pull-right edit-msg" data-id="{{ msg.id }}" aria-hidden="true"></i>
                     <i class="fa fa-trash pull-right delete-msg" data-id="{{ msg.id }}" aria-hidden="true"></i>
                     {% endif %}
+                    {% endif %}
                 </div>
                 <div class="message-text">
                     {{ msg.message }}
                 </div>
+                {% if not msg.service_msg %}
                 <span class="message-time pull-right">{{ msg.created_at|date:"Y-m-d" }}</span>
+                {% endif %}
             </div>
+
         </div>
     </div>
     {% endfor %}
     {% endif %}
 
 </div>
+
 <div class="row reply">
+    <div id="preview-reply-msg" class="col-sm-9 row"></div>
     {% if form %}
-    <div class="col-sm-1 col-xs-1 reply-emojis">
-        <i class="fa fa-smile-o fa-2x"></i>
-    </div>
     <form method="post" action="{% url 'send_message' %}">
         {% csrf_token %}
         <div class="col-sm-9 col-xs-9 reply-main">
@@ -64,5 +71,5 @@
 {% endblock %}
 
 {% block customJs %}
-    <script src="{% static 'js/chat.js' %}" /></script>
+<script src="{% static 'js/chat.js' %}"/></script>
 {% endblock %}
