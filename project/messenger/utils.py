@@ -20,13 +20,13 @@ def get_chat_messages(chat):
     return Message.objects.filter(chat=chat)
 
 
-def get_chat_and_data(user, chat_id):
+def get_data_for_template(user, chat_id, data):
     chat = get_chat_for_user(user, chat_id)
+
     if chat:
         messages = chat.messages.all()
         form = CreateMessageForm({'author': user.id, 'chat': chat_id})
-        return chat, {'chat': chat, 'form': form, 'messages': messages}
-    return None, {}
+        data.update({'chat': chat, 'form': form, 'messages': messages})
 
 
 def get_chat_and_message(chat_id, message_id):

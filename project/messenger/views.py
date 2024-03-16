@@ -1,23 +1,25 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from .models import Chat, Message
-from .forms import CreateChatForm, CreateMessageForm
+from django.contrib.auth.decorators import login_required
 from project.utils import ErrorConstants
 from django.http import HttpResponse
-from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+import json
+from .models import Chat, Message
+from .forms import CreateChatForm, CreateMessageForm
 from .utils import (
     get_chats_list_for_user,
-    get_chat_for_user,
-    get_chat_and_data,
+    get_data_for_template,
     get_chat_and_message)
-from django.contrib.auth.decorators import login_required
-import json
+from .mixins import (
+    MyLoginRequiredMixin,
+    SuperuserOrPermissionRequiredMixin,
+    AjaxRequiredMixin,
+    CreateSuccessMessageMixin)
 
 
-class ChatListPage(LoginRequiredMixin, View):
+class ChatListPage(MyLoginRequiredMixin, View):
     index_template_name = 'chat_list.html'
     show_template_name = 'chat.html'
-    login_url = '/users/login/'
 
     def get(self, request, id=None):
         chats = get_chats_list_for_user(request.user)
@@ -27,23 +29,18 @@ class ChatListPage(LoginRequiredMixin, View):
         }
 
         if id:
-            user = request.user
-            chat = get_chat_for_user(user, id)
-
-            if not chat:
-                return render(request, ErrorConstants.error_404_template, {})
-
-            chat, data = get_chat_and_data(request.user, id)
+            get_data_for_template(request.user, id, data)
 
             return render(request, self.show_template_name, data)
 
         return render(request, self.index_template_name, data)
 
 
-class ChatCreateForm(PermissionRequiredMixin, View):
+class ChatCreateForm(CreateSuccessMessageMixin, SuperuserOrPermissionRequiredMixin, View):
     permission_required = 'messenger.add_chat'
     template_name = 'create_chat.html'
     login_url = '/users/login/'
+    success_message = 'Chat successfully created!'
 
     def get(self, request):
         form = CreateChatForm()
@@ -56,6 +53,7 @@ class ChatCreateForm(PermissionRequiredMixin, View):
             chat, create = Chat.objects.get_or_create(title=title)
             chat.members.add(*form.cleaned_data.get('members'))
             chat.save()
+            self.processed_successfully(request)
         return redirect('chats')
 
 
@@ -83,24 +81,24 @@ class MessagesAction(View):
             return redirect('show_chat', id=chat.id)
 
 
-@login_required
-def delete_message(request):
-    data = json.loads(request.body)
-    form = CreateMessageForm(data)
+class DeleteMessageAction(AjaxRequiredMixin, View):
+    def post(self, request):
+        data = json.loads(request.body)
+        form = CreateMessageForm(data)
 
-    if form.is_valid():
-        user = request.user
-        chat, message = get_chat_and_message(form.cleaned_data.get('chat'), form.cleaned_data.get('message_id'))
+        if form.is_valid():
+            user = request.user
+            chat, message = get_chat_and_message(form.cleaned_data.get('chat'), form.cleaned_data.get('message_id'))
 
-        if not chat or not user:
-            return render(request, ErrorConstants.error_404_template, {})
+            if not chat or not user:
+                return render(request, ErrorConstants.error_404_template, {})
 
-        if message.author != user:
-            return HttpResponse('Forbidden', status=403)
+            if message.author != user:
+                return HttpResponse('Forbidden', status=403)
 
-        message.delete()
+            message.delete()
 
-        return HttpResponse(json.dumps({'message': 'The message changed successfully'}), status=200)
+            return HttpResponse(json.dumps({'message': 'The message changed successfully'}), status=200)
 
 
 @login_required

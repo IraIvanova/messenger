@@ -9,6 +9,8 @@ class CustomUser(AbstractUser):
     first_name = models.CharField('First name', max_length=30, blank=True)
     last_name = models.CharField('Last name', max_length=30, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
+    last_activity = models.DateField(null=True, blank=True)
+    language_preference = models.CharField(max_length=10, null=True, blank=True)
 
     objects = CustomUserManager()
 
