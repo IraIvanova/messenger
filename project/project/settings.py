@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'messenger',
     'users',
     'custom_user',
+    'files_manager',
 ]
 
 MIDDLEWARE = [
@@ -66,7 +67,8 @@ TEMPLATES = [
         'DIRS': [
             os.path.join(BASE_DIR, 'project', 'templates'),
             os.path.join(BASE_DIR, 'messenger', 'templates'),
-            os.path.join(BASE_DIR, 'users', 'templates')
+            os.path.join(BASE_DIR, 'users', 'templates'),
+            os.path.join(BASE_DIR, 'files_manager', 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -145,3 +147,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'custom_user.CustomUser'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'

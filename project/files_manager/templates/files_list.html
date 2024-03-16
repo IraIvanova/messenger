@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% load check_is_file_editable_tag %}
+
+{% block content %}
+<h1>File List</h1>
+    <ul>
+    {% for file in files %}
+        <li>
+            <p>{{ file.name }}</p>
+            <a href="/media/{{file.file}}">View</a>
+            {% check_is_file_editable_tag file as editable %}
+            {% if editable %}
+            <a href="{% url 'edit_file' file.id %}">Edit</a>
+            {% endif %}
+
+        </li>
+    {% endfor %}
+    </ul>
+
+<h1>Upload File</h1>
+    <form method="post" action="{% url 'upload_files' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+    </form>
+{% endblock %}
