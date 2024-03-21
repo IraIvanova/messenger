@@ -56,6 +56,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'messenger.middleware.CalculateRequestProcessingTimeMiddleware',
+    'logistration.middleware.UserLoginLoggingMiddleware',
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -145,3 +147,43 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'custom_user.CustomUser'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'auth_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'auth_logs.log',
+        },
+        'request_time_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'request_time_logs.log',
+        },
+        'messages_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'messages_sent_log.log',
+        },
+    },
+    'loggers': {
+        'auth_logger': {
+            'handlers': ['auth_file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'request_time_logger': {
+            'handlers': ['request_time_file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'message_logger': {
+            'handlers': ['messages_file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
+

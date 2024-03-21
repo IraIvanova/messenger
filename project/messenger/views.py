@@ -3,6 +3,7 @@ from django.views import View
 from django.contrib.auth.decorators import login_required
 from project.utils import ErrorConstants
 from django.http import HttpResponse
+from django.contrib.auth import get_user_model
 import json
 from .models import Chat, Message
 from .forms import CreateChatForm, CreateMessageForm
@@ -70,11 +71,13 @@ class MessagesAction(View):
                 return render(request, ErrorConstants.error_404_template, {})
 
             msg = form.cleaned_data.get('message')
+            recipient = get_user_model().objects.filter(email=form.cleaned_data.get('recipient')).first()
 
             message = Message(
                 message=msg,
                 author=user,
-                chat=chat
+                chat=chat,
+                recipient=recipient
             )
             message.save()
 
