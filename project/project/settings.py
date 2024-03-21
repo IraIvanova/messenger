@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'messenger',
     'users',
     'custom_user',
+    'files_manager',
 ]
 
 MIDDLEWARE = [
@@ -68,7 +69,8 @@ TEMPLATES = [
         'DIRS': [
             os.path.join(BASE_DIR, 'project', 'templates'),
             os.path.join(BASE_DIR, 'messenger', 'templates'),
-            os.path.join(BASE_DIR, 'users', 'templates')
+            os.path.join(BASE_DIR, 'users', 'templates'),
+            os.path.join(BASE_DIR, 'files_manager', 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -187,3 +189,5 @@ LOGGING = {
     },
 }
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
