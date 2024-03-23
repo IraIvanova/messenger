@@ -25,6 +25,7 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('users/', include('logistration.urls')),
     path('files-manager/', include('files_manager.urls')),
+    path('api/', include('messenger_api.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

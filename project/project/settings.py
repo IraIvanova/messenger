@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import environ
 import os
+import datetime
 
 env = environ.Env()
 environ.Env.read_env()
@@ -47,6 +48,9 @@ INSTALLED_APPS = [
     'users',
     'custom_user',
     'files_manager',
+    'messenger_api',
+    'rest_framework',
+    'rest_framework_jwt',
 ]
 
 MIDDLEWARE = [
@@ -191,3 +195,13 @@ LOGGING = {
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
+
+# Configure session settings
+SESSION_COOKIE_NAME = 'auth_cookie'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
