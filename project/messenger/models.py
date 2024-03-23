@@ -25,3 +25,8 @@ class Message(models.Model):
     def reply_to_sender(self):
         sender_message = "You have successfully sent a message to the superuser!"
         Message.objects.create(author=self.author, recipient=self.author, message=sender_message, chat_id=self.chat_id, service_msg=True)
+
+
+class UserStatus(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_status')
+    online = models.BooleanField(default=False)

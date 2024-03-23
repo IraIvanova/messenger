@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.decorators import login_required
 from project.utils import ErrorConstants
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import get_user_model
 import json
-from .models import Chat, Message
+from .models import Chat, Message, UserStatus
 from .forms import CreateChatForm, CreateMessageForm
 from .utils import (
     get_chats_list_for_user,
@@ -123,3 +123,20 @@ def edit_message(request):
         message.save()
 
         return HttpResponse(json.dumps({'message': 'The message changed successfully'}), status=200)
+
+
+def check_statuses(request, chat_id):
+    chat = Chat.objects.get(pk=chat_id)
+    if not chat:
+        return JsonResponse({'error': 'Chat not found'}, status=404)
+
+    members = chat.members.all()
+    user_statuses = {}
+
+    for member in members:
+        try:
+            user_statuses[member.id] = member.user_status.online
+        except UserStatus.DoesNotExist:
+            user_statuses[member.id] = False
+
+    return JsonResponse(user_statuses)
