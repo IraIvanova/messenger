@@ -6,18 +6,18 @@ from rest_framework_simplejwt.views import (
 from .views import (
     UserChatsAPIView,
     UserChatMessagesAPIView,
-    MessageDetailsAPIView,
     ChatCreateAPIView,
-    MessageCreateAPIView
+    MessageCrudAPIView
 )
 
 
 urlpatterns = [
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/user/chats/', UserChatsAPIView.as_view(), name='user_chats'),
-    path('api/user/chats/add', ChatCreateAPIView.as_view()),
-    path('api/user/chat/<int:chat_id>/messages/', UserChatMessagesAPIView.as_view(), name='user_chat_messages'),
-    path('api/message/<int:pk>/', MessageDetailsAPIView.as_view(), name='message_details'),
-    path('api/message/add', MessageCreateAPIView.as_view()),
+    path('token/', TokenObtainPairView.as_view()),
+    path('token/refresh/', TokenRefreshView.as_view()),
+    path('user/chats/', UserChatsAPIView.as_view()),
+    path('chats/add/', ChatCreateAPIView.as_view()),
+    path('chats/<int:chat>/<int:user>/messages/', UserChatMessagesAPIView.as_view()),
+    path('message/add', MessageCrudAPIView.as_view()),
+    path('message/<int:pk>/edit', MessageCrudAPIView.as_view()),
+    path('message/<int:pk>/delete', MessageCrudAPIView.as_view()),
 ]
