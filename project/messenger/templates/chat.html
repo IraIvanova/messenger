@@ -5,7 +5,7 @@
 {% load static %}
 
 {% block chat_thread %}
-<div class="row heading">
+<div class="row heading chat-heading" data-chat="{{chat.id}}">
 
     <div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
         <div class="heading-avatar-icon">
@@ -31,7 +31,13 @@
             <div class="{% define_receiver_or_sender msg user %}">
                 <div>
                     {% if not msg.service_msg %}
-                    <span>{{ msg.author.username }}</span>
+                    <span>{{ msg.author.username }} <span class="user-status" data-user-id="{{msg.author.id}}"> -
+                        {% if msg.author.user_status.online %}
+                         ONLINE
+                        {% else %}
+                        OFFLINE
+                        {% endif %}
+                    </span></span>
                     {% is_edit_date_not_expired msg.created_at as edit_date_not_expired %}
                     {% if request.user == msg.author and edit_date_not_expired %}
                     <i class="fa fa-pencil pull-right edit-msg" data-id="{{ msg.id }}" aria-hidden="true"></i>
@@ -71,5 +77,6 @@
 {% endblock %}
 
 {% block customJs %}
-<script src="{% static 'js/chat.js' %}"/></script>
+<script src="{% static 'js/chat.js' %}"></script>
+<script src="{% static 'js/online_checker.js' %}"></script>
 {% endblock %}
