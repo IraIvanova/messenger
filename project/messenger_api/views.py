@@ -5,6 +5,11 @@ from messenger.models import Chat, Message
 from custom_user.models import CustomUser
 from .serializers import ChatSerializer, MessageSerializer
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.forms import AuthenticationForm
+import json
 
 
 class UserChatsAPIView(generics.ListAPIView):
@@ -122,3 +127,21 @@ class MessageCrudAPIView(generics.CreateAPIView, generics.RetrieveUpdateDestroyA
         if not allowed:
             return response
         return super().delete(request, *args, **kwargs)
+
+
+@csrf_exempt
+def login_view(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        user = authenticate(request, username=username, password=password)
+
+        if not user:
+            return JsonResponse({'error': 'Invalid credentials'}, status=401)
+
+        login(request, user)
+
+        return JsonResponse({'message': 'Login successful'})
+    else:
+        return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)

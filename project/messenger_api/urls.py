@@ -7,13 +7,13 @@ from .views import (
     UserChatsAPIView,
     UserChatMessagesAPIView,
     ChatCreateAPIView,
-    MessageCrudAPIView
+    MessageCrudAPIView,
+    login_view
 )
 
 
 urlpatterns = [
-    path('token/', TokenObtainPairView.as_view()),
-    path('token/refresh/', TokenRefreshView.as_view()),
+    path('login/', login_view),
     path('user/chats/', UserChatsAPIView.as_view()),
     path('chats/add/', ChatCreateAPIView.as_view()),
     path('chats/<int:chat>/<int:user>/messages/', UserChatMessagesAPIView.as_view()),
