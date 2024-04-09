@@ -37,7 +37,7 @@ services:
       dockerfile: ./Dockerfile
     command: celery -A project worker --loglevel=info
     volumes:
-      - ./project:/app/project
+      - ./:/app/project
     depends_on:
       - redis
     environment:
@@ -52,7 +52,7 @@ services:
       dockerfile: ./Dockerfile
     command: celery -A project beat --loglevel=info
     volumes:
-      - ./project:/app/project
+      - ./:/app/project
     depends_on:
       - redis
     environment:
