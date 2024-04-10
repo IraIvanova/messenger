@@ -11,15 +11,18 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
 import environ
 import os
 import datetime
 
-env = environ.Env()
-environ.Env.read_env()
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# print(os.path.join(BASE_DIR, '.env'))
+
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 
 # Quick-start development settings - unsuitable for production
@@ -31,7 +34,7 @@ SECRET_KEY = 'django-insecure-)*e6bc7(_48#b+rz8@5r73hz5q8u^7y8u@kl(^8e+u6axmfnps
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ('0.0.0.0',)
 
 
 # Application definition
@@ -50,7 +53,9 @@ INSTALLED_APPS = [
     'files_manager',
     'messenger_api',
     'rest_framework',
-    'rest_framework_jwt',
+    'celery',
+    'django_celery_beat',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -101,8 +106,8 @@ DATABASES = {
         'NAME': env("DB_NAME"),
         'USER': env("DB_USER"),
         'PASSWORD': env("DB_PASSWORD"),
-        'HOST': env("DB_HOST"),
-        'PORT': env("DB_PORT"),
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 
@@ -173,6 +178,11 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': 'messages_sent_log.log',
         },
+        'last_messages': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'last_messages.log',
+        },
     },
     'loggers': {
         'auth_logger': {
@@ -187,6 +197,11 @@ LOGGING = {
         },
         'message_logger': {
             'handlers': ['messages_file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'last_messages_logger': {
+            'handlers': ['last_messages'],
             'level': 'INFO',
             'propagate': True,
         },
@@ -207,3 +222,15 @@ REST_FRAMEWORK = {
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
 }
+
+DJANGO_ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS")
+
+from .celery import app
+
+app.conf.beat_schedule = {
+    'log_last_messages': {
+        'task': 'tasks.log_last_10_messages',
+        'schedule': crontab(minute='*/1')
+    }
+}
+app.conf.timezone = 'UTC'
